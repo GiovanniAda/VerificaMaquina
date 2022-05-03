@@ -27,14 +27,13 @@ namespace ConnectionTesteConsole.Operation
 
             try
             {
-                Log.Information(web.DownloadString(LinkDaApi).ToString());
+                Log.Information($"{web.DownloadString(LinkDaApi).ToString()} (Tempo Gasto:{TimeCount.ElapsedMilliseconds} ms)");
             }
             catch (Exception e)
             {
                 Log.Error(e.Message);
             }
         }
-
         /// <summary>
         /// Verifica Conexão Com o Banco de dados, Caso não conecte com o banco lança uma exceção
         /// </summary>
@@ -43,12 +42,16 @@ namespace ConnectionTesteConsole.Operation
         public static void WithDB(SqlConnection sqlConnection)
         {
             SqlConnection connection = sqlConnection;
+            Stopwatch Time = new Stopwatch();
             try
             {
+                Time.Start();
                 connection.Open();
                 if (connection.State.ToString() == "Open")
                 {
-                    Log.Information("Conexão estabelecida com sucesso");
+                    Time.Stop();
+                    Log.Information($"Conexão estabelecida com sucesso (Tempo Gasto:{Time.ElapsedMilliseconds} ms)");
+
                 }
             }
             catch (SqlException e)

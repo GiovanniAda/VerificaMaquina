@@ -15,7 +15,7 @@ namespace ConnectionTesteConsole
         static void Main(string[] args)
         {
             SqlConnection sqlConnection = new SqlConnection();
-            sqlConnection.ConnectionString = @"Server = icfc.guiadocondutor.com.br,1444;UID=giovanni;Password=172031";
+            sqlConnection.ConnectionString = "";
             
 
             Log.Logger = new LoggerConfiguration()
@@ -29,7 +29,7 @@ namespace ConnectionTesteConsole
             Check.QuantidadeMemoriaRam(new ManagementObjectSearcher("SELECT MaxCapacity FROM Win32_PhysicalMemoryArray"));
 
             Log.Information("Verificando Conexão Com Api");
-           VerifyConnection.WithApi("http://api.inforcfc.app.br/api/auth/hora");
+           VerifyConnection.WithApi("");
 
             Log.Information("Verificando Conexão Com o Banco de Dados");
             VerifyConnection.WithDB(sqlConnection);

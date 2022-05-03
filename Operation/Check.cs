@@ -47,20 +47,33 @@ namespace ConnectionTesteConsole.Operation
         public static void OsVersion(ManagementObjectSearcher searcherOsVersion)
         {
             string OsVersionAwanser = "";
-            using (searcherOsVersion)
+            try
             {
-                ManagementObjectCollection information = searcherOsVersion.Get();
-                if (information != null)
+                using (searcherOsVersion)
                 {
-                    foreach (ManagementObject obj in information)
+                    ManagementObjectCollection information = searcherOsVersion.Get();
+                    if (information != null)
                     {
-                        OsVersionAwanser = obj["Caption"].ToString() + " - " + obj["OSArchitecture"].ToString();
+                        foreach (ManagementObject obj in information)
+                        {
+                            OsVersionAwanser = obj["Caption"].ToString() + " - " + obj["OSArchitecture"].ToString();
+                        }
                     }
-                }
-                OsVersionAwanser = OsVersionAwanser.Replace("NT 5.1.2600", "XP");
-                OsVersionAwanser = OsVersionAwanser.Replace("NT 5.2.3790", "Server 2003");
+                    else
+                    {
+                        throw new ArgumentNullException();
+                    }
+                    OsVersionAwanser = OsVersionAwanser.Replace("NT 5.1.2600", "XP");
+                    OsVersionAwanser = OsVersionAwanser.Replace("NT 5.2.3790", "Server 2003");
 
+                }
             }
+            catch (Exception erro)
+            {
+
+                Log.Error(erro.Message);
+            }
+            
             Log.Information(OsVersionAwanser);
         }
 
