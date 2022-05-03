@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using Serilog;
 using System.Net;
 using System.Net.Http;
 
@@ -17,32 +18,21 @@ namespace ConnectionTesteConsole.Operation
         /// </summary>
         /// <returns>Retornar texto comprovando conexão com a api</returns>
         /// <exception cref="AuthException">Caso não consiga se conectar com a api dentro de 10 segundos lança uma excessão e continua a executar o codigo</exception>
-        public static string WithApi()
+        public static void WithApi(string LinkDaApi)
         {
             WebClient web = new WebClient();
             Stopwatch TimeCount = new Stopwatch();
 
             TimeCount.Start();
 
-            while (TimeCount.ElapsedMilliseconds < 10000)
+            try
             {
-
-                try
-                {
-                    return web.DownloadString("http://api.inforcfc.app.br/api/auth/hora").ToString();
-                }
-                catch (Exception e)
-                {
-                    return e.Message;
-                }
+                Log.Information(web.DownloadString(LinkDaApi).ToString());
             }
-
-            if (TimeCount.ElapsedMilliseconds > 10000)
+            catch (Exception e)
             {
-                throw new AuthException("Tempo para Conexão Esgotado");
+                Log.Error(e.Message);
             }
-            return "";
-
         }
 
         /// <summary>
@@ -50,31 +40,27 @@ namespace ConnectionTesteConsole.Operation
         /// </summary>
         /// <returns></returns>
         /// <exception cref="SqlException">Exceção Caso Não Consiga Se conectar ao servidor ou aconteça algum erro durante a execução</exception>
-        public static string WithDB()
+        public static void WithDB(SqlConnection sqlConnection)
         {
-            SqlConnection connection = new SqlConnection();
+            SqlConnection connection = sqlConnection;
             try
             {
-                connection.ConnectionString = @"Server = icfc.guiadocondutor.com.br,1444;UID=giovanni;Password=172031";
-                
                 connection.Open();
                 if (connection.State.ToString() == "Open")
                 {
-                    return "Conexão estabelecida com sucesso";
+                    Log.Information("Conexão estabelecida com sucesso");
                 }
-                else return "";
-               
             }
             catch (SqlException e)
             {
 
-                return e.Message;
+                Log.Error(e.Message);
             }
             catch (Exception er)
             {
-                return er.Message;
+                Log.Error(er.Message);
             }
-    }
-       
         }
+
+    }
 }

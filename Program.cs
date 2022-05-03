@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Management;
 using System.Net;
+using System.Data.SqlClient;
 using System.Net.Http;
 using Serilog;
 using ConnectionTesteConsole.Operation;
@@ -13,23 +14,28 @@ namespace ConnectionTesteConsole
     {
         static void Main(string[] args)
         {
+            SqlConnection sqlConnection = new SqlConnection();
+            sqlConnection.ConnectionString = @"Server = icfc.guiadocondutor.com.br,1444;UID=giovanni;Password=172031";
+            
+
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .CreateLogger();
 
-           // Log.Logger = new LoggerConfiguration()
-             //   .MinimumLevel.Debug()
-               // .WriteTo.File(@"f:log\log.txt", rollingInterval: RollingInterval.Day)
-                //.CreateLogger();
-
-            Log.Information("Iniciando Teste De rede");
             Log.Information("Verificando Versão Do Windows...");
-            Log.Information(Check.OsVersion());
+            Check.OsVersion(new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem"));
+
+            Log.Information("Quantidade De Memoria Ram Na maquina");
+            Check.QuantidadeMemoriaRam(new ManagementObjectSearcher("SELECT MaxCapacity FROM Win32_PhysicalMemoryArray"));
+
             Log.Information("Verificando Conexão Com Api");
-            Log.Information(VerifyConnection.WithApi());
+           VerifyConnection.WithApi("http://api.inforcfc.app.br/api/auth/hora");
+
             Log.Information("Verificando Conexão Com o Banco de Dados");
-            Log.Information(VerifyConnection.WithDB());
-         
+            VerifyConnection.WithDB(sqlConnection);
+
+            Console.WriteLine("Aperte Enter Para Fechar");
+            Console.ReadLine();
 
         }
     }
